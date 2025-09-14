@@ -20,6 +20,58 @@
             justify-content: center;
             align-items: center;
             overflow-x: hidden;
+            position: relative; /* Needed for loader */
+        }
+
+        /* Loader Styles */
+        .loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.7s ease-out, visibility 0.7s ease-out;
+        }
+
+        .loader-wrapper.loaded {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader {
+            width: 80px;
+            height: 80px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 8px;
+            transform: rotate(45deg);
+        }
+
+        .loader span {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: #667eea; /* Base color for loader squares */
+            border-radius: 8px;
+            animation: loading 1.2s infinite ease-in-out;
+        }
+
+        .loader span:nth-child(1) { background: #667eea; animation-delay: 0s; }
+        .loader span:nth-child(2) { background: #764ba2; animation-delay: 0.1s; }
+        .loader span:nth-child(3) { background: #764ba2; animation-delay: 0.1s; }
+        .loader span:nth-child(4) { background: #667eea; animation-delay: 0.2s; }
+
+        @keyframes loading {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.5); opacity: 0.5; }
         }
 
         .container {
@@ -49,6 +101,14 @@
             border: 4px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
             transition: transform 0.3s ease;
+            overflow: hidden; /* Ensure image stays within border-radius */
+        }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Cover the area without distortion */
+            border-radius: 50%; /* Apply border-radius to the image itself */
         }
 
         .profile-image:hover {
@@ -248,6 +308,15 @@
     </style>
 </head>
 <body>
+    <div class="loader-wrapper">
+        <div class="loader">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
     <div class="floating-shapes">
         <div class="shape">
             <i class="fas fa-code" style="font-size: 3rem;"></i>
@@ -263,15 +332,15 @@
     <div class="container">
         <div class="profile-section">
             <div class="profile-image">
-                <img scr="https://raw.githubusercontent.com/CodeCr4cker/ConnectifyHub/main/Images/IMG_20250906_064256.jpg">
-          <!--      <i class="fas fa-user"></i> -->
+                <img src="https://raw.githubusercontent.com/CodeCr4cker/ConnectifyHub/main/Images/IMG_20250906_064256.jpg" alt="Divyanshu Pandey Profile Picture">
             </div>
             <h1 class="name">Divyanshu Pandey</h1>
             <p class="title">Developer • Creator • Innovator</p>
         </div>
 
         <div class="links-container">
-       <!--     <a href="https://youtube.com/@yourchannel" class="link-item youtube" target="_blank">
+            <!-- YouTube link (uncommented) -->
+            <a href="https://youtube.com/@yourchannel" class="link-item youtube" target="_blank">
                 <div class="link-icon">
                     <i class="fab fa-youtube"></i>
                 </div>
@@ -280,7 +349,7 @@
                     <div class="link-description">Watch my latest videos</div>
                 </div>
                 <i class="fas fa-arrow-right arrow"></i>
-            </a> -->
+            </a>
 
             <a href="https://github.com/CodeCr4cker" class="link-item github" target="_blank">
                 <div class="link-icon">
@@ -315,7 +384,8 @@
                 <i class="fas fa-arrow-right arrow"></i>
             </a>
 
-          <!--  <a href="https://twitter.com/yourusername" class="link-item twitter" target="_blank">
+            <!-- Twitter link (uncommented) -->
+            <a href="https://twitter.com/yourusername" class="link-item twitter" target="_blank">
                 <div class="link-icon">
                     <i class="fab fa-twitter"></i>
                 </div>
@@ -325,7 +395,7 @@
                 </div>
                 <i class="fas fa-arrow-right arrow"></i>
             </a>
--->
+
             <a href="https://www.instagram.com/divyanshu.0fficial?igsh=MWhic2VkcmU2bHUxZQ==" class="link-item instagram" target="_blank">
                 <div class="link-icon">
                     <i class="fab fa-instagram"></i>
@@ -340,9 +410,14 @@
     </div>
 
     <script>
-        // Add some interactive animations
         document.addEventListener('DOMContentLoaded', function() {
             const links = document.querySelectorAll('.link-item');
+            const loaderWrapper = document.querySelector('.loader-wrapper');
+
+            // Hide loader once all content is loaded
+            window.addEventListener('load', function() {
+                loaderWrapper.classList.add('loaded');
+            });
             
             links.forEach(link => {
                 link.addEventListener('mouseenter', function() {
@@ -374,6 +449,7 @@
                         transform: scale(0);
                         animation: ripple 0.6s linear;
                         pointer-events: none;
+                        z-index: 1; /* Ensure ripple is above link content */
                     `;
                     
                     this.appendChild(ripple);
